@@ -1,3 +1,4 @@
+from time import time
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -6,11 +7,11 @@ mnist = input_data.read_data_sets('data/raw/mnist/', one_hot=True)
 
 # parameters
 batch_size = 128
-training_steps = 10001
-learning_rate = 0.0008
-n_hidden_units_1 = 32
+training_steps = 27001
+learning_rate = 0.001
+n_hidden_units_1 = 512
 keep_prob = 0.75
-print_step = 100
+print_step = 500
 
 # create the graph
 graph = tf.Graph()
@@ -49,6 +50,7 @@ with graph.as_default():
 with tf.Session(graph=graph) as sess:
     sess.run(tf.global_variables_initializer())
 
+    t0 = time()
     for ii in range(training_steps):
         batch_x, batch_y = mnist.train.next_batch(batch_size)
 
@@ -59,7 +61,8 @@ with tf.Session(graph=graph) as sess:
             feed_dict = {x: mnist.validation.images,
                          y: mnist.validation.labels, kp: 1.0}
             acc = sess.run(accuracy, feed_dict=feed_dict)
-            print('[{:>5}] Cost: {:>10.6f}   Acc: {:>6.4f}'.format(ii, c, acc))
+            print('[{:>5}] Cost: {:>10.6f}  Acc: {:>6.4f} [{:.2f}s]'.format(
+                ii, c, acc, time()-t0))
 
     feed_dict = {x: mnist.test.images, y: mnist.test.labels, kp: 1.0}
     print('Test accuracy: {:.4f}'.format(sess.run(accuracy,
